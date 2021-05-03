@@ -1,0 +1,13 @@
+trigger: none
+
+stages:
+  - template: /eng/pipelines/templates/stages/archetype-sdk-tests.yml
+    parameters:
+      ServiceDirectory: servicebus
+      Artifacts:
+        - name: azure-messaging-servicebus
+          groupId: com.azure
+          safeName: azuremessagingservicebus
+      Clouds: 'Public,Canary'
+      EnvVars:
+        AZURE_LOG_LEVEL: 2

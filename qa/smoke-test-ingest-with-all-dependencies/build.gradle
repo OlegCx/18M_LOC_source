@@ -1,0 +1,32 @@
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0 and the Server Side Public License, v 1; you may not use this file except
+ * in compliance with, at your election, the Elastic License 2.0 or the Server
+ * Side Public License, v 1.
+ */
+
+apply plugin: 'elasticsearch.testclusters'
+apply plugin: 'elasticsearch.standalone-rest-test'
+apply plugin: 'elasticsearch.rest-test'
+apply plugin: 'elasticsearch.rest-resources'
+
+dependencies {
+  testImplementation project(':modules:ingest-common')
+  testImplementation project(':modules:ingest-geoip')
+  testImplementation project(':modules:lang-mustache')
+  testImplementation project(':modules:lang-painless')
+  testImplementation project(':modules:reindex')
+}
+
+testClusters.all {
+  setting 'xpack.security.enabled', 'false'
+}
+
+tasks.named("testingConventions").configure {
+  naming {
+    IT {
+      baseClass 'org.elasticsearch.ingest.AbstractScriptTestCase'
+    }
+  }
+}

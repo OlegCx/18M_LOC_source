@@ -1,0 +1,44 @@
+import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
+
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0 and the Server Side Public License, v 1; you may not use this file except
+ * in compliance with, at your election, the Elastic License 2.0 or the Server
+ * Side Public License, v 1.
+ */
+apply plugin: 'elasticsearch.yaml-rest-test'
+apply plugin: 'elasticsearch.yaml-rest-compat-test'
+apply plugin: 'elasticsearch.internal-cluster-test'
+
+esplugin {
+  description 'The ICU Analysis plugin integrates the Lucene ICU module into Elasticsearch, adding ICU-related analysis components.'
+  classname 'org.elasticsearch.plugin.analysis.icu.AnalysisICUPlugin'
+}
+
+tasks.named("forbiddenApisMain").configure {
+  signatures += [
+    "com.ibm.icu.text.Collator#getInstance() @ Don't use default locale, use getInstance(ULocale) instead"
+  ]
+}
+
+dependencies {
+  api "org.apache.lucene:lucene-analyzers-icu:${versions.lucene}"
+  api "com.ibm.icu:icu4j:${versions.icu4j}"
+}
+
+restResources {
+  restApi {
+    include '_common', 'indices', 'index', 'search'
+  }
+}
+
+tasks.named("dependencyLicenses").configure {
+  mapping from: /lucene-.*/, to: 'lucene'
+}
+
+tasks.named("yamlRestCompatTest").configure {
+  systemProperty 'tests.rest.blacklist', [
+    'analysis_icu/10_basic/Normalization with deprecated unicodeSetFilter'
+  ].join(',')
+}

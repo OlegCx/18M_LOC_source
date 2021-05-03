@@ -1,0 +1,34 @@
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0 and the Server Side Public License, v 1; you may not use this file except
+ * in compliance with, at your election, the Elastic License 2.0 or the Server
+ * Side Public License, v 1.
+ */
+apply plugin: 'elasticsearch.yaml-rest-test'
+apply plugin: 'elasticsearch.yaml-rest-compat-test'
+apply plugin: 'elasticsearch.java-rest-test'
+apply plugin: 'elasticsearch.internal-cluster-test'
+
+esplugin {
+  description 'Mustache scripting integration for Elasticsearch'
+  classname 'org.elasticsearch.script.mustache.MustachePlugin'
+}
+
+dependencies {
+  api "com.github.spullara.mustache.java:compiler:0.9.6"
+}
+
+restResources {
+  restApi {
+    include '_common', 'cluster', 'nodes', 'indices', 'index', 'bulk',
+      'put_script', 'render_search_template', 'search_template', 'msearch_template', 'lang_mustache'
+  }
+}
+
+tasks.named("yamlRestCompatTest").configure {
+  systemProperty 'tests.rest.blacklist', [
+    'lang_mustache/60_typed_keys/Multisearch template with typed_keys parameter',
+    'lang_mustache/60_typed_keys/Search template with typed_keys parameter'
+  ].join(',')
+}

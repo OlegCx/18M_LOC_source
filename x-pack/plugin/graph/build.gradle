@@ -1,0 +1,16 @@
+apply plugin: 'elasticsearch.esplugin'
+apply plugin: 'elasticsearch.internal-cluster-test'
+esplugin {
+  name 'x-pack-graph'
+  description 'Elasticsearch Expanded Pack Plugin - Graph'
+  classname 'org.elasticsearch.xpack.graph.Graph'
+  extendedPlugins = ['x-pack-core']
+}
+archivesBaseName = 'x-pack-graph'
+
+dependencies {
+  compileOnly project(path: xpackModule('core'))
+  testImplementation(testArtifact(project(xpackModule('core'))))
+}
+
+addQaCheckDependencies()
